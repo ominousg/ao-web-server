@@ -5551,7 +5551,7 @@ void DakaraClientPacketHandler::handleGoNearby(GoNearby* p) { (void)p;
 
 	std::string UserName;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 
 	int tIndex;
 	int X;
@@ -5678,7 +5678,7 @@ void DakaraClientPacketHandler::handleWhere(Where* p) { (void)p;
 	int tUser = 0;
 	std::string miPos;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 
 	if (!UserTieneAlgunPrivilegios(UserIndex, PlayerType_User)) {
 
@@ -5884,12 +5884,10 @@ void DakaraClientPacketHandler::handleWarpChar(WarpChar* p) { (void)p;
 	int Y;
 	int tUser = 0;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 	Map = p->Map;
 	X = p->X;
 	Y = p->Y;
-
-	UserName = vb6::Replace(UserName, "+", " ");
 
 	if (!UserTieneAlgunPrivilegios(UserIndex, PlayerType_User)) {
 		if (MapaValido(Map) && vb6::LenB(UserName) != 0) {
@@ -5947,7 +5945,7 @@ void DakaraClientPacketHandler::handleSilence(Silence* p) { (void)p;
 	std::string UserName;
 	int tUser = 0;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 
 	if (!UserTieneAlgunPrivilegios(UserIndex, PlayerType_User)) {
 		tUser = NameIndex(UserName);
@@ -6089,7 +6087,8 @@ void DakaraClientPacketHandler::handleGoToChar(GoToChar* p) { (void)p;
 	int X;
 	int Y;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
+
 	tUser = NameIndex(UserName);
 
 	if (UserTieneAlgunPrivilegios(UserIndex, PlayerType_Dios, PlayerType_Admin, PlayerType_SemiDios, PlayerType_Consejero)) {
@@ -6310,10 +6309,10 @@ void DakaraClientPacketHandler::handleJail(Jail* p) { (void)p;
 		UserName = vb6::Replace(UserName, "+", " ");
 	}
 
-	/* '/carcel nick@motivo@<tiempo> */
-	if (!UserTieneAlgunPrivilegios(UserIndex, PlayerType_RoleMaster, PlayerType_User)) {
+	// Check if the user has enough powers
+	if (UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios, PlayerType_SemiDios)) {
 		if (vb6::LenB(UserName) == 0 || vb6::LenB(Reason) == 0) {
-			WriteConsoleMsg(UserIndex, "Utilice /carcel nick@motivo@tiempo", FontTypeNames_FONTTYPE_INFO);
+			WriteConsoleMsg(UserIndex, "Utilice /carcel nick motivo tiempo", FontTypeNames_FONTTYPE_INFO);
 		} else {
 			tUser = NameIndex(UserName);
 
@@ -6325,10 +6324,10 @@ void DakaraClientPacketHandler::handleJail(Jail* p) { (void)p;
 					WriteConsoleMsg(UserIndex, "El usuario no está online.", FontTypeNames_FONTTYPE_INFO);
 				}
 			} else {
-				if (!UserTieneAlgunPrivilegios(UserIndex, PlayerType_User)) {
-					WriteConsoleMsg(UserIndex, "No puedes encarcelar a administradores.",
-							FontTypeNames_FONTTYPE_INFO);
-				} else if (jailTime > 60) {
+				if (UserTieneMasPrivilegiosQue(tUser, UserIndex)) {
+				WriteConsoleMsg(UserIndex, "No puedes encarcelar a alguien con jerarquía mayor a la tuya.",
+						FontTypeNames_FONTTYPE_INFO);
+			} else if (jailTime > 60) {
 					WriteConsoleMsg(UserIndex, "No puedés encarcelar por más de 60 minutos.",
 							FontTypeNames_FONTTYPE_INFO);
 				} else {
@@ -7047,7 +7046,7 @@ void DakaraClientPacketHandler::handleRequestCharStats(RequestCharStats* p) { (v
 	bool UserIsAdmin = false;
 	bool OtherUserIsAdmin = false;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 
 	UserIsAdmin = UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios);
 
@@ -7102,7 +7101,7 @@ void DakaraClientPacketHandler::handleRequestCharGold(RequestCharGold* p) { (voi
 	bool UserIsAdmin = false;
 	bool OtherUserIsAdmin = false;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 
 	UserIsAdmin = (UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios));
 
@@ -7161,7 +7160,7 @@ void DakaraClientPacketHandler::handleRequestCharInventory(RequestCharInventory*
 	bool UserIsAdmin = false;
 	bool OtherUserIsAdmin = false;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 
 	UserIsAdmin = (UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios));
 
@@ -7217,7 +7216,7 @@ void DakaraClientPacketHandler::handleRequestCharBank(RequestCharBank* p) { (voi
 	bool UserIsAdmin = false;
 	bool OtherUserIsAdmin = false;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 
 	UserIsAdmin = (UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios));
 
@@ -7272,7 +7271,7 @@ void DakaraClientPacketHandler::handleRequestCharSkills(RequestCharSkills* p) { 
 	int LoopC;
 	std::string message;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 	tUser = NameIndex(UserName);
 
 	if (UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios, PlayerType_SemiDios)) {
@@ -7320,8 +7319,8 @@ void DakaraClientPacketHandler::handleReviveChar(ReviveChar* p) { (void)p;
 	std::string UserName;
 	int tUser = 0;
 
-	UserName = p->UserName;
-
+	UserName = vb6::Replace(p->UserName, "+", " ");
+	
 	if (UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios, PlayerType_SemiDios)) {
 		if (vb6::UCase(UserName) != "YO") {
 			tUser = NameIndex(UserName);
@@ -7484,7 +7483,7 @@ void DakaraClientPacketHandler::handleForgive(Forgive* p) { (void)p;
 	std::string UserName;
 	int tUser = 0;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 
 	if (!UserTienePrivilegio(UserIndex, PlayerType_RoleMaster)
 			&& UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios, PlayerType_SemiDios)) {
@@ -7521,7 +7520,7 @@ void DakaraClientPacketHandler::handleKick(Kick* p) { (void)p;
 	int tUser = 0;
 	bool IsAdmin;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 	IsAdmin = UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios);
 
 	if (UserTieneAlgunPrivilegios(UserIndex, PlayerType_SemiDios) | IsAdmin) {
@@ -7565,7 +7564,7 @@ void DakaraClientPacketHandler::handleExecute(Execute* p) { (void)p;
 	std::string UserName;
 	int tUser = 0;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 
 	if (!UserTieneAlgunPrivilegios(UserIndex, PlayerType_RoleMaster)
 			&& UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios, PlayerType_SemiDios)) {
@@ -7602,7 +7601,6 @@ void DakaraClientPacketHandler::handleExecute(Execute* p) { (void)p;
 /* ' Handles the "BanChar" message. */
 /* ' */
 
-
 void DakaraClientPacketHandler::handleBanChar(BanChar* p) { (void)p;
 	/* '*************************************************** */
 	/* 'Author: Nicolas Matias Gonzalez (NIGO) */
@@ -7613,7 +7611,7 @@ void DakaraClientPacketHandler::handleBanChar(BanChar* p) { (void)p;
 	std::string UserName;
 	std::string Reason;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 	Reason = p->Reason;
 
 	if (!UserTieneAlgunPrivilegios(UserIndex, PlayerType_RoleMaster)
@@ -7637,7 +7635,7 @@ void DakaraClientPacketHandler::handleUnbanChar(UnbanChar* p) { (void)p;
 	std::string UserName;
 	int cantPenas;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 
 	if (!UserTieneAlgunPrivilegios(UserIndex, PlayerType_RoleMaster)
 			&& UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios, PlayerType_SemiDios)) {
@@ -7715,7 +7713,7 @@ void DakaraClientPacketHandler::handleSummonChar(SummonChar* p) { (void)p;
 	int X;
 	int Y;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 
 	if (UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios, PlayerType_SemiDios)) {
 		tUser = NameIndex(UserName);
@@ -7916,7 +7914,7 @@ void DakaraClientPacketHandler::handleNickToIP(NickToIP* p) { (void)p;
 	int tUser = 0;
 	bool IsAdmin = false;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 
 	if (!UserTienePrivilegio(UserIndex, PlayerType_RoleMaster)
 			&& UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios, PlayerType_SemiDios)) {
@@ -8531,7 +8529,7 @@ void DakaraClientPacketHandler::handleAcceptRoyalCouncilMember(AcceptRoyalCounci
 	std::string UserName;
 	int tUser = 0;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 
 	if (!UserTieneAlgunPrivilegios(UserIndex, PlayerType_RoleMaster)
 			&& UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios)) {
@@ -8570,7 +8568,7 @@ void DakaraClientPacketHandler::handleAcceptChaosCouncilMember(AcceptChaosCounci
 	std::string UserName;
 	int tUser = 0;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 
 	if (!UserTieneAlgunPrivilegios(UserIndex, PlayerType_RoleMaster)
 			&& UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios)) {
@@ -8739,7 +8737,7 @@ void DakaraClientPacketHandler::handleCouncilKick(CouncilKick* p) { (void)p;
 	std::string UserName;
 	int tUser = 0;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 
 	if (UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios)
 			&& (!UserTienePrivilegio(UserIndex, PlayerType_RoleMaster))) {
@@ -9183,7 +9181,7 @@ void DakaraClientPacketHandler::handleChaosLegionKick(ChaosLegionKick* p) { (voi
 	int tUser = 0;
 	int cantPenas;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 	Reason = p->Reason;
 
 	if (UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios)
@@ -9260,7 +9258,7 @@ void DakaraClientPacketHandler::handleRoyalArmyKick(RoyalArmyKick* p) { (void)p;
 	int tUser = 0;
 	int cantPenas;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 	Reason = p->Reason;
 
 	if (UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios)
@@ -9382,7 +9380,7 @@ void DakaraClientPacketHandler::handleRemovePunishment(RemovePunishment* p) { (v
 	int punishment;
 	std::string NewText;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 	punishment = p->Punishment;
 	NewText = p->NewText;
 
@@ -9390,7 +9388,7 @@ void DakaraClientPacketHandler::handleRemovePunishment(RemovePunishment* p) { (v
 			&& (!UserTienePrivilegio(UserIndex, PlayerType_RoleMaster))) {
 
 		if (vb6::LenB(UserName) == 0) {
-			WriteConsoleMsg(UserIndex, "Utilice /borrarpena Nick@NumeroDePena@NuevaPena",
+			WriteConsoleMsg(UserIndex, "Utilice /borrarpena Nick NumeroDePena NuevaPena",
 					FontTypeNames_FONTTYPE_INFO);
 		} else {
 			if ((vb6::InStrB(UserName, "/") != 0)) {
@@ -9533,7 +9531,7 @@ void DakaraClientPacketHandler::handleLastIP(LastIP* p) { (void)p;
 	bool validCheck = false;
 
 	priv = PlayerType_Admin | PlayerType_Dios | PlayerType_SemiDios | PlayerType_Consejero;
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 
 	if (UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios, PlayerType_SemiDios)
 			&& (!UserTienePrivilegio(UserIndex, PlayerType_RoleMaster))) {
@@ -10026,6 +10024,8 @@ void DakaraClientPacketHandler::handleChangeMapInfoPK(ChangeMapInfoPK* p) { (voi
 	/* 'Last modified by: Juan Martín Sotuyo Dodero (Maraxus) */
 	/* 'Change the pk`s info of the  map */
 	/* '*************************************************** */
+	
+	// std::cerr << "Valor viniendo del cliente con el comando /MODMAPINFO PK: " << p->Pk << std::endl;
 
 	bool isMapPk;
 
@@ -10883,7 +10883,7 @@ void DakaraClientPacketHandler::handleTurnCriminal(TurnCriminal* p) { (void)p;
 	std::string UserName;
 	int tUser = 0;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 
 	if (!UserTieneAlgunPrivilegios(UserIndex, PlayerType_RoleMaster)
 			&& UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios)) {
@@ -10919,7 +10919,7 @@ void DakaraClientPacketHandler::handleResetFactions(ResetFactions* p) { (void)p;
 	std::string Char;
 	int cantPenas;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 
 	if (UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios)
 			|| UserList[UserIndex].flags.PrivEspecial) {
@@ -10983,7 +10983,7 @@ void DakaraClientPacketHandler::handleRemoveCharFromGuild(RemoveCharFromGuild* p
 	std::string UserName;
 	int GuildIndex;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 
 	if (!UserTienePrivilegio(UserIndex, PlayerType_RoleMaster)
 			&& UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios)) {
@@ -11024,7 +11024,7 @@ void DakaraClientPacketHandler::handleRequestCharMail(RequestCharMail* p) { (voi
 	std::string UserName;
 	std::string mail;
 
-	UserName = p->UserName;
+	UserName = vb6::Replace(p->UserName, "+", " ");
 
 	if (UserTieneAlgunPrivilegios(UserIndex, PlayerType_Admin, PlayerType_Dios)
 			|| UserList[UserIndex].flags.PrivEspecial) {
