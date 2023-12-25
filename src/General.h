@@ -35,6 +35,8 @@ bool HayAgua(int Map, int X, int Y);
 
 bool HayLava(int Map, int X, int Y);
 
+bool HayRevividorCercano(int UserIndex);
+
 void LimpiarMundo();
 
 void EnviarSpawnList(int UserIndex);

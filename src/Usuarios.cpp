@@ -823,6 +823,11 @@ void MoveUserChar(int UserIndex, eHeading nHeading) {
 		if (MapInfo[UserList[UserIndex].Pos.Map].NumUsers > 1) {
 
 			CasperIndex = MapData[UserList[UserIndex].Pos.Map][nPos.X][nPos.Y].UserIndex;
+
+			if (HayRevividorCercano(UserIndex)) {
+    			AutoResurrectUser(UserIndex);
+			}
+
 			/* 'Si hay un usuario, y paso la validacion, entonces es un casper */
 			if (CasperIndex > 0) {
 				/* ' Los admins invisibles no pueden patear caspers */
@@ -943,6 +948,27 @@ void ChangeUserInv(int UserIndex, int Slot, struct UserOBJ & Object) {
 
 	UserList[UserIndex].Invent.Object[Slot] = Object;
 	WriteChangeInventorySlot(UserIndex, Slot);
+}
+
+void AutoResurrectUser(int UserIndex) {
+    if (UserList[UserIndex].flags.Muerto == 1) {
+        RevivirUsuario(UserIndex);
+        UserList[UserIndex].Stats.MinMAN = UserList[UserIndex].Stats.MaxMAN;
+        WriteUpdateMana(UserIndex);
+        UserList[UserIndex].Stats.MinHp = UserList[UserIndex].Stats.MaxHp;
+        WriteUpdateHP(UserIndex);
+        WriteConsoleMsg(UserIndex, "¡¡Has sido resucitado!!", FontTypeNames_FONTTYPE_INFO);
+    }
+
+    if (UserList[UserIndex].Stats.MinHp < UserList[UserIndex].Stats.MaxHp) {
+        UserList[UserIndex].Stats.MinHp = UserList[UserIndex].Stats.MaxHp;
+        WriteUpdateHP(UserIndex);
+        WriteConsoleMsg(UserIndex, "¡¡Has sido curado!!", FontTypeNames_FONTTYPE_INFO);
+    }
+
+    if (UserList[UserIndex].flags.Envenenado == 1) {
+        UserList[UserIndex].flags.Envenenado = 0;
+    }
 }
 
 int NextOpenCharIndex() {

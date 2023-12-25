@@ -190,6 +190,26 @@ bool HayLava(int Map, int X, int Y) {
 	return retval;
 }
 
+bool HayRevividorCercano(int UserIndex) {
+    int x, y;
+
+    for (y = UserList[UserIndex].Pos.Y - MinYBorder + 1; y <= UserList[UserIndex].Pos.Y + MinYBorder - 1; y++) {
+        for (x = UserList[UserIndex].Pos.X - MinXBorder + 1; x <= UserList[UserIndex].Pos.X + MinXBorder - 1; x++) {
+            
+            if (MapData[UserList[UserIndex].Pos.Map][x][y].NpcIndex > 0) {
+                if (Npclist[MapData[UserList[UserIndex].Pos.Map][x][y].NpcIndex].NPCtype == 1 ||
+    				Npclist[MapData[UserList[UserIndex].Pos.Map][x][y].NpcIndex].NPCtype == 9) {
+                    if (Distancia(UserList[UserIndex].Pos, Npclist[MapData[UserList[UserIndex].Pos.Map][x][y].NpcIndex].Pos) < 6) {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
 void LimpiarMundo() {
 
 	for (auto& d : TrashCollector) {
