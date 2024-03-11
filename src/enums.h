@@ -117,7 +117,8 @@ enum FXIDs {
 	FXIDs_FXMEDITARMEDIANO = 5,
 	FXIDs_FXMEDITARGRANDE = 6,
 	FXIDs_FXMEDITARXGRANDE = 16,
-	FXIDs_FXMEDITARXXGRANDE = 34
+	FXIDs_FXMEDITARXXGRANDE = 34,
+	FXIDs_FXRESUCITAR = 2
 };
 enum eTrigger {
 	eTrigger_NADA = 0,
@@ -126,7 +127,8 @@ enum eTrigger {
 	eTrigger_POSINVALIDA = 3,
 	eTrigger_ZONASEGURA = 4,
 	eTrigger_ANTIPIQUETE = 5,
-	eTrigger_ZONAPELEA = 6
+	eTrigger_ZONAPELEA = 6,
+	eTrigger_AUTORESU = 7,
 };
 enum eTrigger6 {
 	eTrigger6_TRIGGER6_PERMITE = 1, eTrigger6_TRIGGER6_PROHIBE = 2, eTrigger6_TRIGGER6_AUSENTE = 3

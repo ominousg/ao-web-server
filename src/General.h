@@ -35,7 +35,15 @@ bool HayAgua(int Map, int X, int Y);
 
 bool HayLava(int Map, int X, int Y);
 
-bool HayRevividorCercano(int UserIndex);
+void CrearAreaResucitadora(int NpcIndex);
+
+bool EsAreaResucitadora(int UserIndex);
+
+void AutoResucitar(int UserIndex);
+
+void EliminarAreaResucitadora(int NpcIndex);
+
+bool EsNPCResucitador(int NpcIndex);
 
 void LimpiarMundo();
 

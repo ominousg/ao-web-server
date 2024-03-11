@@ -190,24 +190,64 @@ bool HayLava(int Map, int X, int Y) {
 	return retval;
 }
 
-bool HayRevividorCercano(int UserIndex) {
-    int x, y;
+void CrearAreaResucitadora(int NpcIndex) {
+    const int ResuRange = 4;
 
-    for (y = UserList[UserIndex].Pos.Y - MinYBorder + 1; y <= UserList[UserIndex].Pos.Y + MinYBorder - 1; y++) {
-        for (x = UserList[UserIndex].Pos.X - MinXBorder + 1; x <= UserList[UserIndex].Pos.X + MinXBorder - 1; x++) {
-            
-            if (MapData[UserList[UserIndex].Pos.Map][x][y].NpcIndex > 0) {
-                if (Npclist[MapData[UserList[UserIndex].Pos.Map][x][y].NpcIndex].NPCtype == 1 ||
-    				Npclist[MapData[UserList[UserIndex].Pos.Map][x][y].NpcIndex].NPCtype == 9) {
-                    if (Distancia(UserList[UserIndex].Pos, Npclist[MapData[UserList[UserIndex].Pos.Map][x][y].NpcIndex].Pos) < 6) {
-                        return true;
-                    }
+    WorldPos NpcPos;
+    NpcPos.Map = Npclist[NpcIndex].Pos.Map;
+    NpcPos.X = Npclist[NpcIndex].Pos.X;
+    NpcPos.Y = Npclist[NpcIndex].Pos.Y;
+    for (int X = NpcPos.X - ResuRange; X <= NpcPos.X + ResuRange; ++X) {
+        for (int Y = NpcPos.Y - ResuRange; Y <= NpcPos.Y + ResuRange; ++Y) {
+            if (InMapBounds(NpcPos.Map, X, Y)) {
+                if (MapData[NpcPos.Map][X][Y].trigger != eTrigger_AUTORESU || MapData[NpcPos.Map][X][Y].trigger == eTrigger_NADA) {
+                    MapData[NpcPos.Map][X][Y].trigger = eTrigger_AUTORESU;
                 }
             }
         }
     }
+}
 
-    return false;
+bool EsAreaResucitadora(int UserIndex) {
+    return MapData[UserList[UserIndex].Pos.Map][UserList[UserIndex].Pos.X][UserList[UserIndex].Pos.Y].trigger == eTrigger_AUTORESU;
+}
+
+void AutoResucitar(int UserIndex) {
+    if (UserList[UserIndex].flags.Muerto == 1) {
+        RevivirUsuario(UserIndex);
+        WriteConsoleMsg(UserIndex, "¡¡Has sido resucitado!!", FontTypeNames_FONTTYPE_INFO);
+    }
+
+    if (UserList[UserIndex].Stats.MinHp < UserList[UserIndex].Stats.MaxHp) {
+        UserList[UserIndex].Stats.MinHp = UserList[UserIndex].Stats.MaxHp;
+        WriteUpdateHP(UserIndex);
+        WriteConsoleMsg(UserIndex, "¡¡Has sido curado!!", FontTypeNames_FONTTYPE_INFO);
+    }
+
+    if (UserList[UserIndex].flags.Envenenado == 1) {
+        UserList[UserIndex].flags.Envenenado = 0;
+    }
+}
+
+void EliminarAreaResucitadora(int NpcIndex) {
+    const int ResuRange = 4;
+
+    struct WorldPos NpcPos;
+    NpcPos.Map = Npclist[NpcIndex].Pos.Map;
+    NpcPos.X = Npclist[NpcIndex].Pos.X;
+    NpcPos.Y = Npclist[NpcIndex].Pos.Y;
+
+    for (int X = NpcPos.X - ResuRange; X <= NpcPos.X + ResuRange; ++X) {
+        for (int Y = NpcPos.Y - ResuRange; Y <= NpcPos.Y + ResuRange; ++Y) {
+            if (InMapBounds(NpcPos.Map, X, Y)) {
+                MapData[NpcPos.Map][X][Y].trigger = eTrigger_NADA;
+            }
+        }
+    }
+}
+
+bool EsNPCResucitador(int NpcIndex) {
+  return (Npclist[NpcIndex].NPCtype == eNPCType_Revividor || Npclist[NpcIndex].NPCtype == eNPCType_ResucitadorNewbie);
 }
 
 void LimpiarMundo() {

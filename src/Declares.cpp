@@ -317,6 +317,7 @@ const int SND_ESCUDO = 37;
 const int MARTILLOHERRERO = 41;
 const int LABUROCARPINTERO = 42;
 const int SND_BEBER = 46;
+const int SND_RESU = 20;
 
 /* '' */
 /* ' Cantidad maxima de objetos por slot de inventario */

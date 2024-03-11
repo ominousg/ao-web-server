@@ -58,8 +58,6 @@ eHeading InvertHeading(eHeading nHeading);
 
 void ChangeUserInv(int UserIndex, int Slot, struct UserOBJ & Object);
 
-void AutoResurrectUser(int UserIndex);
-
 int NextOpenCharIndex();
 
 std::size_t NextOpenUser();

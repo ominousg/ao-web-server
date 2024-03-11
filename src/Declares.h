@@ -344,6 +344,7 @@ extern const int SND_ESCUDO;
 extern const int MARTILLOHERRERO;
 extern const int LABUROCARPINTERO;
 extern const int SND_BEBER;
+extern const int SND_RESU;
 
 /* '' */
 /* ' Cantidad maxima de objetos por slot de inventario */

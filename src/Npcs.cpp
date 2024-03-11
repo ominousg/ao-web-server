@@ -370,6 +370,11 @@ void QuitarNPC(int NpcIndex) {
 		EraseNPCChar(NpcIndex);
 	}
 
+	// si es NPC resucitador, removemos los triggers a su alrededor
+	if (EsNPCResucitador(NpcIndex)) {
+		EliminarAreaResucitadora(NpcIndex);
+	}
+
 	/* 'Nos aseguramos de que el inventario sea removido... */
 	/* 'asi los lobos no volveran a tirar armaduras ;)) */
 	ResetNpcInv(NpcIndex);
@@ -589,6 +594,10 @@ void MakeNPCChar(bool toMap, int sndIndex, int NpcIndex, int Map, int X, int Y) 
 	}
 
 	MapData[Map][X][Y].NpcIndex = NpcIndex;
+
+	if (EsNPCResucitador(NpcIndex)) {
+		CrearAreaResucitadora(NpcIndex);
+	}
 
 	if (!toMap) {
 		WriteCharacterCreate(sndIndex, Npclist[NpcIndex].Char.body, Npclist[NpcIndex].Char.Head,

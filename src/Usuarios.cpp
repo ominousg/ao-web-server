@@ -112,6 +112,13 @@ void RevivirUsuario(int UserIndex) {
 			UserList[UserIndex].Char.heading, UserList[UserIndex].Char.WeaponAnim,
 			UserList[UserIndex].Char.ShieldAnim, UserList[UserIndex].Char.CascoAnim);
 	WriteUpdateUserStats(UserIndex);
+	
+	SendData(SendTarget_ToPCArea, UserIndex,
+		dakara::protocol::server::BuildPlayWave(SND_RESU, UserList[UserIndex].Pos.X,
+	UserList[UserIndex].Pos.Y));
+
+	SendData(SendTarget_ToPCArea, UserIndex,
+		dakara::protocol::server::BuildCreateFX(UserList[UserIndex].Char.CharIndex, FXIDs_FXRESUCITAR, 0));
 }
 
 void ToggleBoatBody(int UserIndex) {
@@ -824,10 +831,6 @@ void MoveUserChar(int UserIndex, eHeading nHeading) {
 
 			CasperIndex = MapData[UserList[UserIndex].Pos.Map][nPos.X][nPos.Y].UserIndex;
 
-			if (HayRevividorCercano(UserIndex)) {
-    			AutoResurrectUser(UserIndex);
-			}
-
 			/* 'Si hay un usuario, y paso la validacion, entonces es un casper */
 			if (CasperIndex > 0) {
 				/* ' Los admins invisibles no pueden patear caspers */
@@ -887,6 +890,10 @@ void MoveUserChar(int UserIndex, eHeading nHeading) {
 			UserList[UserIndex].Char.heading = nHeading;
 			MapData[UserList[UserIndex].Pos.Map][UserList[UserIndex].Pos.X][UserList[UserIndex].Pos.Y].UserIndex =
 					UserIndex;
+
+			if (EsAreaResucitadora(UserIndex)) {
+				AutoResucitar(UserIndex);
+			}
 
 			DoTileEvents(UserIndex, UserList[UserIndex].Pos.Map, UserList[UserIndex].Pos.X,
 					UserList[UserIndex].Pos.Y);
@@ -948,27 +955,6 @@ void ChangeUserInv(int UserIndex, int Slot, struct UserOBJ & Object) {
 
 	UserList[UserIndex].Invent.Object[Slot] = Object;
 	WriteChangeInventorySlot(UserIndex, Slot);
-}
-
-void AutoResurrectUser(int UserIndex) {
-    if (UserList[UserIndex].flags.Muerto == 1) {
-        RevivirUsuario(UserIndex);
-        UserList[UserIndex].Stats.MinMAN = UserList[UserIndex].Stats.MaxMAN;
-        WriteUpdateMana(UserIndex);
-        UserList[UserIndex].Stats.MinHp = UserList[UserIndex].Stats.MaxHp;
-        WriteUpdateHP(UserIndex);
-        WriteConsoleMsg(UserIndex, "¡¡Has sido resucitado!!", FontTypeNames_FONTTYPE_INFO);
-    }
-
-    if (UserList[UserIndex].Stats.MinHp < UserList[UserIndex].Stats.MaxHp) {
-        UserList[UserIndex].Stats.MinHp = UserList[UserIndex].Stats.MaxHp;
-        WriteUpdateHP(UserIndex);
-        WriteConsoleMsg(UserIndex, "¡¡Has sido curado!!", FontTypeNames_FONTTYPE_INFO);
-    }
-
-    if (UserList[UserIndex].flags.Envenenado == 1) {
-        UserList[UserIndex].flags.Envenenado = 0;
-    }
 }
 
 int NextOpenCharIndex() {
